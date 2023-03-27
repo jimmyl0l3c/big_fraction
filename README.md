@@ -1,6 +1,5 @@
 # BigFraction
 
-About
 Fork of [fraction package](https://pub.dev/packages/fraction).
 
 A Dart/Flutter package about fractions. This fork offers fractions using BigInt for their numerator/denominator.

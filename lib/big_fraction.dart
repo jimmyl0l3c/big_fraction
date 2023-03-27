@@ -1,6 +1,6 @@
 /// A package that helps you working with fractions, mixed fractions and
 /// egyptian fractions.
-library fraction;
+library big_fraction;
 
 export 'src/extensions/fraction_num.dart';
 export 'src/extensions/fraction_string.dart';

@@ -1,19 +1,19 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 
-/// Extension method that adds [Fraction] functionalities to [String].
-extension FractionString on String {
+/// Extension method that adds [BigFraction] functionalities to [String].
+extension BigFractionString on String {
   /// Checks whether the string contains a valid representation of a fraction in
   /// the 'a/b' format.
   ///
   /// Note that 'a' and 'b' must be integers.
-  bool get isFraction {
+  bool get isBigFraction {
     try {
-      Fraction.fromString(this);
+      BigFraction.fromString(this);
 
       return true;
     } on Exception {
       try {
-        Fraction.fromGlyph(this);
+        BigFraction.fromGlyph(this);
 
         return true;
       } on Exception {
@@ -22,15 +22,15 @@ extension FractionString on String {
     }
   }
 
-  /// Converts the string into a [Fraction].
+  /// Converts the string into a [BigFraction].
   ///
   /// If you want to be sure that this method doesn't throw a
   /// [FractionException], use `isFraction` before.
-  Fraction toFraction() {
+  BigFraction toBigFraction() {
     try {
-      return Fraction.fromString(this);
+      return BigFraction.fromString(this);
     } on FractionException {
-      return Fraction.fromGlyph(this);
+      return BigFraction.fromGlyph(this);
     }
   }
 }

@@ -1,16 +1,16 @@
-import 'package:fraction/fraction.dart';
-import 'package:fraction/src/types/egyptian_converter.dart';
+import 'package:big_fraction/big_fraction.dart';
+import 'package:big_fraction/src/types/egyptian_converter.dart';
 
 /// Dart representation of a fraction having both the numerator and the
 /// denominator as integers.
 ///
 /// ```dart
-/// Fraction(-2, 5);
-/// Fraction.fromDouble(1.5);
-/// Fraction.fromString("4/5");
+/// BigFraction(-2, 5);
+/// BigFraction.fromDouble(1.5);
+/// BigFraction.fromString("4/5");
 /// ```
 ///
-/// There also are extension methods to quickly build [Fraction] objects from
+/// There also are extension methods to quickly build [BigFraction] objects from
 /// primitive types:
 ///
 /// ```dart
@@ -20,62 +20,107 @@ import 'package:fraction/src/types/egyptian_converter.dart';
 ///
 /// If the string doesn't represent a valid fraction, a [FractionException]
 /// object is thrown.
-class Fraction extends Rational {
+class BigFraction extends BigRational {
   /// This regular expression matches the structure of fraction in the `a/b`
   /// format with the optional minus (-) sign at the front.
   static final _fractionRegex = RegExp(
-    r'(^-?|^\+?)(?:[1-9][0-9]*|0)(?:/[1-9][0-9]*)?',
+    r'(^-?|^\+?)(?:[1-9]\d*|0)(?:/[1-9]\d*)?',
   );
 
   /// Maps fraction glyphs to fraction values.
   static final _glyphsToValues = {
-    '½': Fraction(1, 2),
-    '⅓': Fraction(1, 3),
-    '⅔': Fraction(2, 3),
-    '¼': Fraction(1, 4),
-    '¾': Fraction(3, 4),
-    '⅕': Fraction(1, 5),
-    '⅖': Fraction(2, 5),
-    '⅗': Fraction(3, 5),
-    '⅘': Fraction(4, 5),
-    '⅙': Fraction(1, 6),
-    '⅚': Fraction(5, 6),
-    '⅐': Fraction(1, 7),
-    '⅛': Fraction(1, 8),
-    '⅜': Fraction(3, 8),
-    '⅝': Fraction(5, 8),
-    '⅞': Fraction(7, 8),
-    '⅑': Fraction(1, 9),
-    '⅒': Fraction(1, 10),
+    '½': BigFraction.from(1, 2),
+    '⅓': BigFraction.from(1, 3),
+    '⅔': BigFraction.from(2, 3),
+    '¼': BigFraction.from(1, 4),
+    '¾': BigFraction.from(3, 4),
+    '⅕': BigFraction.from(1, 5),
+    '⅖': BigFraction.from(2, 5),
+    '⅗': BigFraction.from(3, 5),
+    '⅘': BigFraction.from(4, 5),
+    '⅙': BigFraction.from(1, 6),
+    '⅚': BigFraction.from(5, 6),
+    '⅐': BigFraction.from(1, 7),
+    '⅛': BigFraction.from(1, 8),
+    '⅜': BigFraction.from(3, 8),
+    '⅝': BigFraction.from(5, 8),
+    '⅞': BigFraction.from(7, 8),
+    '⅑': BigFraction.from(1, 9),
+    '⅒': BigFraction.from(1, 10),
   };
 
   /// Maps fraction values to fraction glyphs.
   static final _valuesToGlyphs = {
-    Fraction(1, 2): '½',
-    Fraction(1, 3): '⅓',
-    Fraction(2, 3): '⅔',
-    Fraction(1, 4): '¼',
-    Fraction(3, 4): '¾',
-    Fraction(1, 5): '⅕',
-    Fraction(2, 5): '⅖',
-    Fraction(3, 5): '⅗',
-    Fraction(4, 5): '⅘',
-    Fraction(1, 6): '⅙',
-    Fraction(5, 6): '⅚',
-    Fraction(1, 7): '⅐',
-    Fraction(1, 8): '⅛',
-    Fraction(3, 8): '⅜',
-    Fraction(5, 8): '⅝',
-    Fraction(7, 8): '⅞',
-    Fraction(1, 9): '⅑',
-    Fraction(1, 10): '⅒',
+    BigFraction.from(1, 2): '½',
+    BigFraction.from(1, 3): '⅓',
+    BigFraction.from(2, 3): '⅔',
+    BigFraction.from(1, 4): '¼',
+    BigFraction.from(3, 4): '¾',
+    BigFraction.from(1, 5): '⅕',
+    BigFraction.from(2, 5): '⅖',
+    BigFraction.from(3, 5): '⅗',
+    BigFraction.from(4, 5): '⅘',
+    BigFraction.from(1, 6): '⅙',
+    BigFraction.from(5, 6): '⅚',
+    BigFraction.from(1, 7): '⅐',
+    BigFraction.from(1, 8): '⅛',
+    BigFraction.from(3, 8): '⅜',
+    BigFraction.from(5, 8): '⅝',
+    BigFraction.from(7, 8): '⅞',
+    BigFraction.from(1, 9): '⅑',
+    BigFraction.from(1, 10): '⅒',
   };
 
   /// The numerator of the fraction.
-  final int _numerator;
+  final BigInt _numerator;
 
   /// The denominator of the fraction.
-  final int _denominator;
+  final BigInt _denominator;
+
+  /// Creates a new representation of a fraction. If the denominator is
+  /// negative, the fraction is 'normalized' so that the minus sign only appears
+  /// in front of the denominator.
+  ///
+  /// ```dart
+  /// Fraction(BigInt.from(3), BigInt.from(4))  // is interpreted as 3/4
+  /// Fraction(BigInt.from(-3), BigInt.from(4)) // is interpreted as -3/4
+  /// Fraction(BigInt.from(3), BigInt.from(-4)) // is interpreted as -3/4
+  /// Fraction(BigInt.from(3))     // is interpreted as 3/1
+  /// ```
+  ///
+  /// A [FractionException] object is thrown when [denominator] is zero.
+  factory BigFraction(BigInt numerator, [BigInt? denominator]) {
+    denominator ??= BigInt.one;
+
+    if (denominator == BigInt.zero) {
+      throw const FractionException('Denominator cannot be zero.');
+    }
+
+    // Fixing the sign of numerator and denominator
+    if (denominator < BigInt.zero) {
+      return BigFraction._(
+        numerator * BigInt.from(-1),
+        denominator * BigInt.from(-1),
+      );
+    } else {
+      return BigFraction._(numerator, denominator);
+    }
+  }
+
+  /// BigFraction with the value 0 (0/1).
+  BigFraction.zero()
+      : _numerator = BigInt.zero,
+        _denominator = BigInt.one;
+
+  /// BigFraction with the value 1 (1/1).
+  BigFraction.one()
+      : _numerator = BigInt.one,
+        _denominator = BigInt.one;
+
+  /// BigFraction with the value -1 (-1/1).
+  BigFraction.minusOne()
+      : _numerator = BigInt.from(-1),
+        _denominator = BigInt.one;
 
   /// Creates a new representation of a fraction. If the denominator is
   /// negative, the fraction is 'normalized' so that the minus sign only appears
@@ -89,23 +134,13 @@ class Fraction extends Rational {
   /// ```
   ///
   /// A [FractionException] object is thrown when [denominator] is zero.
-  factory Fraction(int numerator, [int denominator = 1]) {
-    if (denominator == 0) {
-      throw const FractionException('Denominator cannot be zero.');
-    }
-
-    // Fixing the sign of numerator and denominator
-    if (denominator < 0) {
-      return Fraction._(numerator * -1, denominator * -1);
-    } else {
-      return Fraction._(numerator, denominator);
-    }
-  }
+  factory BigFraction.from(int numerator, [int denominator = 1]) =>
+      BigFraction(BigInt.from(numerator), BigInt.from(denominator));
 
   /// The default constructor.
-  const Fraction._(this._numerator, this._denominator);
+  const BigFraction._(this._numerator, this._denominator);
 
-  /// Returns an instance of [Fraction] if the source string is a valid
+  /// Returns an instance of [BigFraction] if the source string is a valid
   /// representation of a fraction. Some valid examples are:
   ///
   /// ```dart
@@ -122,7 +157,7 @@ class Fraction extends Rational {
   ///
   /// If the given string [value] doesn't represent a fraction, then a
   /// [FractionException] object is thrown.
-  factory Fraction.fromString(String value) {
+  factory BigFraction.fromString(String value) {
     // Check the format of the string
     if ((!_fractionRegex.hasMatch(value)) || (value.contains('/-'))) {
       throw FractionException('The string $value is not a valid fraction');
@@ -135,20 +170,20 @@ class Fraction extends Rational {
     final barPos = fraction.indexOf('/');
 
     if (barPos == -1) {
-      return Fraction(int.parse(fraction));
+      return BigFraction(BigInt.parse(fraction));
     } else {
-      final den = int.parse(fraction.substring(barPos + 1));
+      final den = BigInt.parse(fraction.substring(barPos + 1));
 
-      if (den == 0) {
+      if (den == BigInt.zero) {
         throw const FractionException('Denominator cannot be zero');
       }
 
       // Fixing the sign of numerator and denominator
-      return Fraction(int.parse(fraction.substring(0, barPos)), den);
+      return BigFraction(BigInt.parse(fraction.substring(0, barPos)), den);
     }
   }
 
-  /// Returns an instance of [Fraction] if the source string is a glyph
+  /// Returns an instance of [BigFraction] if the source string is a glyph
   /// representing a fraction.
   ///
   /// A 'glyph' (or 'number form') is an unicode character that represents a
@@ -163,7 +198,7 @@ class Fraction extends Rational {
   ///
   /// If the given string [value] doesn't represent a fraction glyph, then a
   /// [FractionException] object is thrown.
-  factory Fraction.fromGlyph(String value) {
+  factory BigFraction.fromGlyph(String value) {
     if (_glyphsToValues.containsKey(value)) {
       return _glyphsToValues[value]!;
     }
@@ -201,7 +236,7 @@ class Fraction extends Rational {
   /// irrational numbers cannot be expressed as fractions.
   ///
   /// This method is good with rational numbers.
-  factory Fraction.fromDouble(double value, {double precision = 1.0e-12}) {
+  factory BigFraction.fromDouble(double value, {double precision = 1.0e-12}) {
     _checkValue(value);
     _checkValue(precision);
 
@@ -230,31 +265,32 @@ class Fraction extends Rational {
     } while ((x - h1 / k1).abs() > x * limit);
 
     // Assigning the computed values
-    return Fraction(mul * h1, k1);
+    return BigFraction(BigInt.from(mul * h1), BigInt.from(k1));
   }
 
-  /// Converts a [MixedFraction] into a [Fraction].
-  factory Fraction.fromMixedFraction(MixedFraction mixed) {
+  /// Converts a [MixedBigFraction] into a [BigFraction].
+  factory BigFraction.fromMixedFraction(MixedBigFraction mixed) {
     var num = mixed.whole * mixed.denominator + mixed.numerator;
 
     if (mixed.isNegative) {
-      num = mixed.whole * mixed.denominator + (mixed.numerator * -1);
+      num =
+          mixed.whole * mixed.denominator + (mixed.numerator * BigInt.from(-1));
     }
 
-    return Fraction(num, mixed.denominator);
+    return BigFraction(num, mixed.denominator);
   }
 
   @override
-  int get numerator => _numerator;
+  BigInt get numerator => _numerator;
 
   @override
-  int get denominator => _denominator;
+  BigInt get denominator => _denominator;
 
   @override
-  bool get isNegative => numerator < 0;
+  bool get isNegative => numerator < BigInt.zero;
 
   @override
-  bool get isWhole => denominator == 1;
+  bool get isWhole => denominator == BigInt.one;
 
   @override
   bool operator ==(Object other) {
@@ -273,7 +309,7 @@ class Fraction extends Rational {
       return true;
     }
 
-    if (other is Fraction) {
+    if (other is BigFraction) {
       final fraction = other;
 
       return runtimeType == fraction.runtimeType &&
@@ -296,7 +332,7 @@ class Fraction extends Rational {
 
   @override
   String toString() {
-    if (denominator == 1) {
+    if (denominator == BigInt.one) {
       return '$numerator';
     }
 
@@ -307,12 +343,12 @@ class Fraction extends Rational {
   double toDouble() => numerator / denominator;
 
   @override
-  Fraction negate() => Fraction(numerator * -1, denominator);
+  BigFraction negate() => BigFraction(numerator * BigInt.from(-1), denominator);
 
   @override
-  Fraction reduce() {
+  BigFraction reduce() {
     // Storing the sign for later use.
-    final sign = (numerator < 0) ? -1 : 1;
+    final sign = (numerator < BigInt.zero) ? BigInt.from(-1) : BigInt.one;
 
     // Calculating the gcd for reduction.
     final lgcd = numerator.gcd(denominator);
@@ -320,15 +356,15 @@ class Fraction extends Rational {
     final num = (numerator * sign) ~/ lgcd;
     final den = (denominator * sign) ~/ lgcd;
 
-    return Fraction(num, den);
+    return BigFraction(num, den);
   }
 
   @override
-  List<Fraction> toEgyptianFraction() =>
-      EgyptianFractionConverter(fraction: this).compute();
+  List<BigFraction> toEgyptianFraction() =>
+      EgyptianBigFractionConverter(fraction: this).compute();
 
-  /// If possible, this method converts this [Fraction] instance into an unicode
-  /// glyph string.
+  /// If possible, this method converts this [BigFraction] instance into an
+  /// unicode glyph string.
   ///
   /// A 'glyph' (or 'number form') is an unicode character that represents a
   /// fraction. For example, the glyph for "1/7" is ⅐. Only a very small subset
@@ -352,8 +388,8 @@ class Fraction extends Rational {
     );
   }
 
-  /// Converts this object into a [MixedFraction].
-  MixedFraction toMixedFraction() => MixedFraction(
+  /// Converts this object into a [MixedBigFraction].
+  MixedBigFraction toMixedFraction() => MixedBigFraction(
         whole: numerator ~/ denominator,
         numerator: numerator % denominator,
         denominator: denominator,
@@ -361,11 +397,11 @@ class Fraction extends Rational {
 
   /// Creates a **deep** copy of this object with the given fields replaced
   /// with the new values.
-  Fraction copyWith({
-    int? numerator,
-    int? denominator,
+  BigFraction copyWith({
+    BigInt? numerator,
+    BigInt? denominator,
   }) =>
-      Fraction(
+      BigFraction(
         numerator ?? this.numerator,
         denominator ?? this.denominator,
       );
@@ -378,8 +414,8 @@ class Fraction extends Rational {
   }
 
   /// The numerator and the denominator of this object are swapped and returned
-  /// in a new [Fraction] object.
-  Fraction inverse() => Fraction(denominator, numerator);
+  /// in a new [BigFraction] object.
+  BigFraction inverse() => BigFraction(denominator, numerator);
 
   /// Returns `true` if the numerator is smaller than the denominator.
   bool get isProper => numerator < denominator;
@@ -387,7 +423,8 @@ class Fraction extends Rational {
   /// Returns `true` if the numerator is equal or greater than the denominator.
   bool get isImproper => numerator >= denominator;
 
-  /// Returns `true` if this [Fraction] object has an associated unicode glyph.
+  /// Returns `true` if this [BigFraction] object has an associated unicode
+  /// glyph.
   /// For example:
   ///
   /// ```dart
@@ -399,25 +436,25 @@ class Fraction extends Rational {
   bool get isFractionGlyph => _valuesToGlyphs.containsKey(this);
 
   /// The sum between two fractions.
-  Fraction operator +(Fraction other) => Fraction(
+  BigFraction operator +(BigFraction other) => BigFraction(
         numerator * other.denominator + denominator * other.numerator,
         denominator * other.denominator,
       );
 
   /// The difference between two fractions.
-  Fraction operator -(Fraction other) => Fraction(
+  BigFraction operator -(BigFraction other) => BigFraction(
         numerator * other.denominator - denominator * other.numerator,
         denominator * other.denominator,
       );
 
   /// The product of two fractions.
-  Fraction operator *(Fraction other) => Fraction(
+  BigFraction operator *(BigFraction other) => BigFraction(
         numerator * other.numerator,
         denominator * other.denominator,
       );
 
   /// The division of two fractions.
-  Fraction operator /(Fraction other) => Fraction(
+  BigFraction operator /(BigFraction other) => BigFraction(
         numerator * other.denominator,
         denominator * other.numerator,
       );
@@ -426,7 +463,7 @@ class Fraction extends Rational {
   /// refers to the numerator and ´1´ to the denominator.
   ///
   /// Throws a [FractionException] object if [index] is not `0` or `1`.
-  int operator [](int index) {
+  BigInt operator [](int index) {
     if (index == 0) {
       return numerator;
     }

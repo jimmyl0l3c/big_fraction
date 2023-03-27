@@ -1,7 +1,7 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 
-/// This class converts a [Fraction] or a [MixedFraction] type into its egyptian
-/// fraction representation. Only positive number are allowed.
+/// This class converts a [BigFraction] or a [MixedBigFraction] type into its
+/// egyptian fraction representation. Only positive number are allowed.
 ///
 /// An Egyptian fraction is a finite sum of distinct fractions where the
 /// numerator is always 1, the denominator is a positive number and all the
@@ -19,29 +19,31 @@ import 'package:fraction/fraction.dart';
 ///
 /// In various cases, the value of the denominator can be so big that an
 /// overflow error happens.
-class EgyptianFractionConverter {
+class EgyptianBigFractionConverter {
   /// This variable caches the result of the `compute()` method.
-  static final _cache = <Fraction, List<Fraction>>{};
+  static final _cache = <BigFraction, List<BigFraction>>{};
 
   /// The fraction to be converted into an egyptian fraction.
-  final Fraction fraction;
+  final BigFraction fraction;
 
-  /// Creates an [EgyptianFractionConverter] instance from a [Fraction] object.
-  const EgyptianFractionConverter({
+  /// Creates an [EgyptianBigFractionConverter] instance from a [BigFraction]
+  /// object.
+  const EgyptianBigFractionConverter({
     required this.fraction,
   });
 
-  /// Creates an [EgyptianFractionConverter] instance from a [MixedFraction]
+  /// Creates an [EgyptianBigFractionConverter] instance from
+  /// a [MixedBigFraction]
   /// object.
-  EgyptianFractionConverter.fromMixedFraction({
-    required MixedFraction mixedFraction,
+  EgyptianBigFractionConverter.fromMixedFraction({
+    required MixedBigFraction mixedFraction,
   }) : this(fraction: mixedFraction.toFraction());
 
-  /// Returns a series of [Fraction]s representing the egyptian fraction of the
-  /// current [fraction] object.
+  /// Returns a series of [BigFraction]s representing the egyptian fraction of
+  /// the current [fraction] object.
   ///
   /// Throws a [FractionException] if [fraction] is negative.
-  List<Fraction> compute() {
+  List<BigFraction> compute() {
     if (fraction.isNegative) {
       throw const FractionException('The fraction must be positive!');
     }
@@ -52,21 +54,21 @@ class EgyptianFractionConverter {
     }
 
     // Computing the fraction series
-    final results = <Fraction>[];
+    final results = <BigFraction>[];
 
     var numerator = fraction.numerator;
     var denominator = fraction.denominator;
 
-    while (numerator > 0) {
-      final egyptianDen = (denominator + numerator - 1) ~/ numerator;
-      results.add(Fraction(1, egyptianDen));
+    while (numerator > BigInt.zero) {
+      final egyptianDen = (denominator + numerator - BigInt.one) ~/ numerator;
+      results.add(BigFraction(BigInt.one, egyptianDen));
 
       numerator = _modulo(-denominator, numerator);
       denominator *= egyptianDen;
     }
 
     // The value isn't in the cache at this point to we must add it
-    _cache[fraction] = List<Fraction>.from(results);
+    _cache[fraction] = List<BigFraction>.from(results);
 
     return results;
   }
@@ -77,7 +79,7 @@ class EgyptianFractionConverter {
       return true;
     }
 
-    if (other is EgyptianFractionConverter) {
+    if (other is EgyptianBigFractionConverter) {
       return fraction == other.fraction;
     } else {
       return false;
@@ -89,7 +91,7 @@ class EgyptianFractionConverter {
 
   @override
   String toString() {
-    List<Fraction> results;
+    List<BigFraction> results;
 
     // Trying to not compute the fraction (if possible).
     if (_cache.containsKey(fraction)) {
@@ -98,7 +100,7 @@ class EgyptianFractionConverter {
       results = compute();
 
       // We can cache it if caching is enabled.
-      _cache[fraction] = List<Fraction>.from(results);
+      _cache[fraction] = List<BigFraction>.from(results);
     }
 
     final buffer = StringBuffer()..writeAll(results, ' + ');
@@ -106,5 +108,5 @@ class EgyptianFractionConverter {
     return buffer.toString();
   }
 
-  int _modulo(int a, int b) => ((a % b) + b) % b;
+  BigInt _modulo(BigInt a, BigInt b) => ((a % b) + b) % b;
 }

@@ -1,7 +1,7 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 
-/// Extension method that adds [MixedFraction] functionalities to [String].
-extension MixedFractionString on String {
+/// Extension method that adds [MixedBigFraction] functionalities to [String].
+extension MixedBigFractionString on String {
   /// Checks whether a string contains a valid representation of a mixed
   /// fraction in the 'a b/c' format:
   ///
@@ -9,9 +9,9 @@ extension MixedFractionString on String {
   ///  * there can be the minus sign only in front of a;
   ///  * there must be exactly one space between the whole part and the
   ///  fraction.
-  bool get isMixedFraction {
+  bool get isMixedBigFraction {
     try {
-      MixedFraction.fromString(this);
+      MixedBigFraction.fromString(this);
 
       return true;
     } on Exception {
@@ -19,9 +19,9 @@ extension MixedFractionString on String {
     }
   }
 
-  /// Converts the string into a [Fraction].
+  /// Converts the string into a [BigFraction].
   ///
   /// If you want to be sure that this method doesn't throw a
   /// [MixedFractionException] object, use `isFraction` before.
-  MixedFraction toMixedFraction() => MixedFraction.fromString(this);
+  MixedBigFraction toMixedBigFraction() => MixedBigFraction.fromString(this);
 }

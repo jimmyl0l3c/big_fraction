@@ -1,22 +1,22 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 import 'package:test/test.dart';
 
 void main() {
   group("Testing the extension method on 'num'", () {
     test('Making sure that integers are properly converted into fractions', () {
-      expect(13.toFraction(), equals(Fraction(13)));
-      expect((-3).toFraction(), equals(Fraction(-3)));
-      expect(0.toFraction(), equals(Fraction(0)));
+      expect(13.toBigFraction(), equals(BigFraction.from(13)));
+      expect((-3).toBigFraction(), equals(BigFraction.from(-3)));
+      expect(0.toBigFraction(), equals(BigFraction.zero()));
     });
 
     test('Making sure that doubles are properly converted into fractions', () {
-      expect(8.46.toFraction(), equals(Fraction(423, 50)));
-      expect((-3.9).toFraction(), equals(Fraction(-39, 10)));
-      expect(0.toFraction(), equals(Fraction(0)));
-      expect(double.nan.toFraction, throwsA(isA<FractionException>()));
-      expect(double.infinity.toFraction, throwsA(isA<FractionException>()));
+      expect(8.46.toBigFraction(), equals(BigFraction.from(423, 50)));
+      expect((-3.9).toBigFraction(), equals(BigFraction.from(-39, 10)));
+      expect(0.toBigFraction(), equals(BigFraction.zero()));
+      expect(double.nan.toBigFraction, throwsA(isA<FractionException>()));
+      expect(double.infinity.toBigFraction, throwsA(isA<FractionException>()));
       expect(
-        double.negativeInfinity.toFraction,
+        double.negativeInfinity.toBigFraction,
         throwsA(isA<FractionException>()),
       );
     });

@@ -1,12 +1,12 @@
-import 'package:fraction/fraction.dart';
-import 'package:fraction/src/types/egyptian_converter.dart';
+import 'package:big_fraction/big_fraction.dart';
+import 'package:big_fraction/src/types/egyptian_converter.dart';
 
 /// Dart representation of a 'mixed fraction', which is made up by the whole
 /// part and a proper fraction. A proper fraction is a fraction in which the
 /// relation `numerator <= denominator` is true.
 ///
-/// There's the possibility to create an instance of [MixedFraction] either by
-/// using one of the constructors or the extension methods on [num] and
+/// There's the possibility to create an instance of [MixedBigFraction] either
+/// by using one of the constructors or the extension methods on [num] and
 /// [String].
 ///
 /// ```dart
@@ -19,7 +19,7 @@ import 'package:fraction/src/types/egyptian_converter.dart';
 /// MixedFraction.fromString("1 1/2");
 /// ```
 ///
-/// There also are extension methods to quickly build [Fraction] objects from
+/// There also are extension methods to quickly build [BigFraction] objects from
 /// primitive types:
 ///
 /// ```dart
@@ -29,15 +29,15 @@ import 'package:fraction/src/types/egyptian_converter.dart';
 ///
 /// If the string doesn't represent a valid fraction, a [MixedFractionException]
 /// is thrown.
-class MixedFraction extends Rational {
+class MixedBigFraction extends BigRational {
   /// Whole part of the mixed fraction.
-  final int whole;
+  final BigInt whole;
 
   /// The numerator of the fractional part.
-  final int _numerator;
+  final BigInt _numerator;
 
   /// The denominator of the fractional part.
-  final int _denominator;
+  final BigInt _denominator;
 
   /// Creates an instance of a mixed fraction.
   ///
@@ -49,19 +49,21 @@ class MixedFraction extends Rational {
   /// ```
   ///
   /// ... the object is built as '3 1/3' since '1 7/3' would be invalid.
-  factory MixedFraction({
-    required int whole,
-    required int numerator,
-    required int denominator,
+  factory MixedBigFraction({
+    required BigInt whole,
+    required BigInt numerator,
+    required BigInt denominator,
   }) {
     // Denominator cannot be zero
-    if (denominator == 0) {
+    if (denominator == BigInt.zero) {
       throw const MixedFractionException('The denominator cannot be zero');
     }
 
     // The sign of the fractional part doesn't persist on the fraction itself;
     // the negative sign only applies (by convention) to the whole part
-    final sign = Fraction(numerator, denominator).isNegative ? -1 : 1;
+    final sign = BigFraction(numerator, denominator).isNegative
+        ? BigInt.from(-1)
+        : BigInt.one;
     final absNumerator = numerator.abs();
     final absDenominator = denominator.abs();
 
@@ -69,13 +71,13 @@ class MixedFraction extends Rational {
     // to transform the fraction and make it proper. The sign of the whole part
     // may change depending on the sign of the fractional part.
     if (absNumerator > absDenominator) {
-      return MixedFraction._(
+      return MixedBigFraction._(
         (absNumerator ~/ absDenominator + whole) * sign,
         absNumerator % absDenominator,
         absDenominator,
       );
     } else {
-      return MixedFraction._(
+      return MixedBigFraction._(
         whole * sign,
         absNumerator,
         absDenominator,
@@ -84,10 +86,10 @@ class MixedFraction extends Rational {
   }
 
   /// The default constructor.
-  const MixedFraction._(this.whole, this._numerator, this._denominator);
+  const MixedBigFraction._(this.whole, this._numerator, this._denominator);
 
   /// Creates an instance of a mixed fraction.
-  factory MixedFraction.fromFraction(Fraction fraction) =>
+  factory MixedBigFraction.fromFraction(BigFraction fraction) =>
       fraction.toMixedFraction();
 
   /// Creates an instance of a mixed fraction. The input string must be in the
@@ -104,7 +106,7 @@ class MixedFraction extends Rational {
   /// MixedFraction.fromString('1 1/3');
   /// MixedFraction.fromString('3 ⅐');
   /// ```
-  factory MixedFraction.fromString(String value) {
+  factory MixedBigFraction.fromString(String value) {
     const errorObj = MixedFractionException(
       "The string must be in the form 'a b/c' with exactly one space between "
       'the whole part and the fraction',
@@ -132,19 +134,19 @@ class MixedFraction extends Rational {
      * exception can occur only if the second part is a malformed string (not a
      * fraction)
      * */
-    Fraction fraction;
+    BigFraction fraction;
 
     // The string must be either a fraction with numbers and a slash or a glyph.
     // If that's not the case, then a 'FractionException' is thrown.
     try {
-      fraction = Fraction.fromString(parts[1]);
+      fraction = BigFraction.fromString(parts[1]);
     } on FractionException {
-      fraction = Fraction.fromGlyph(parts[1]);
+      fraction = BigFraction.fromGlyph(parts[1]);
     }
 
     // Fixing the potential negative signs
-    return MixedFraction(
-      whole: int.parse(parts.first),
+    return MixedBigFraction(
+      whole: BigInt.parse(parts.first),
       numerator: fraction.numerator,
       denominator: fraction.denominator,
     );
@@ -178,24 +180,27 @@ class MixedFraction extends Rational {
   /// irrational numbers cannot be expressed as fractions.
   ///
   /// This method is good with rational numbers.
-  factory MixedFraction.fromDouble(double value, {double precision = 1.0e-12}) {
+  factory MixedBigFraction.fromDouble(
+    double value, {
+    double precision = 1.0e-12,
+  }) {
     // Use 'Fraction' to reuse the continued fraction algorithm.
-    final fraction = Fraction.fromDouble(value, precision: precision);
+    final fraction = BigFraction.fromDouble(value, precision: precision);
 
     return fraction.toMixedFraction();
   }
 
   @override
-  int get numerator => _numerator;
+  BigInt get numerator => _numerator;
 
   @override
-  int get denominator => _denominator;
+  BigInt get denominator => _denominator;
 
   @override
-  bool get isNegative => whole < 0;
+  bool get isNegative => whole < BigInt.zero;
 
   @override
-  bool get isWhole => fractionalPart == Fraction(1);
+  bool get isWhole => fractionalPart == BigFraction.one();
 
   @override
   bool operator ==(Object other) {
@@ -215,7 +220,7 @@ class MixedFraction extends Rational {
       return true;
     }
 
-    if (other is MixedFraction) {
+    if (other is MixedBigFraction) {
       return toFraction() == other.toFraction();
     } else {
       return false;
@@ -235,7 +240,7 @@ class MixedFraction extends Rational {
 
   @override
   String toString() {
-    if (whole == 0) {
+    if (whole == BigInt.zero) {
       return '$numerator/$denominator';
     }
 
@@ -243,20 +248,20 @@ class MixedFraction extends Rational {
   }
 
   @override
-  double toDouble() => whole + numerator / denominator;
+  double toDouble() => whole.toDouble() + (numerator / denominator);
 
   @override
-  MixedFraction negate() => MixedFraction(
-        whole: whole * -1,
+  MixedBigFraction negate() => MixedBigFraction(
+        whole: whole * BigInt.from(-1),
         numerator: numerator,
         denominator: denominator,
       );
 
   @override
-  MixedFraction reduce() {
-    final fractionalPart = Fraction(numerator, denominator).reduce();
+  MixedBigFraction reduce() {
+    final fractionalPart = BigFraction(numerator, denominator).reduce();
 
-    return MixedFraction(
+    return MixedBigFraction(
       whole: whole,
       numerator: fractionalPart.numerator,
       denominator: fractionalPart.denominator,
@@ -264,12 +269,12 @@ class MixedFraction extends Rational {
   }
 
   @override
-  List<Fraction> toEgyptianFraction() =>
-      EgyptianFractionConverter.fromMixedFraction(
+  List<BigFraction> toEgyptianFraction() =>
+      EgyptianBigFractionConverter.fromMixedFraction(
         mixedFraction: this,
       ).compute();
 
-  /// If possible, this method converts this [MixedFraction] instance into an
+  /// If possible, this method converts this [MixedBigFraction] instance into an
   /// unicode glyph string. For example:
   ///
   /// ```dart
@@ -282,9 +287,9 @@ class MixedFraction extends Rational {
   ///
   /// If the conversion is not possible, a [FractionException] object is thrown.
   String toStringAsGlyph() {
-    final glyph = Fraction(numerator, denominator).toStringAsGlyph();
+    final glyph = BigFraction(numerator, denominator).toStringAsGlyph();
 
-    if (whole == 0) {
+    if (whole == BigInt.zero) {
       return glyph;
     } else {
       return '$whole $glyph';
@@ -292,47 +297,47 @@ class MixedFraction extends Rational {
   }
 
   /// Converts this mixed fraction into a fraction.
-  Fraction toFraction() => Fraction.fromMixedFraction(this);
+  BigFraction toFraction() => BigFraction.fromMixedFraction(this);
 
   /// Creates a **deep** copy of this object with the given fields replaced
   /// with the new values.
-  MixedFraction copyWith({
-    int? whole,
-    int? numerator,
-    int? denominator,
+  MixedBigFraction copyWith({
+    BigInt? whole,
+    BigInt? numerator,
+    BigInt? denominator,
   }) =>
-      MixedFraction(
+      MixedBigFraction(
         whole: whole ?? this.whole,
         numerator: numerator ?? this.numerator,
         denominator: denominator ?? this.denominator,
       );
 
-  /// Returns the fractional part of the mixed fraction as [Fraction] object.
-  Fraction get fractionalPart => Fraction(numerator, denominator);
+  /// Returns the fractional part of the mixed fraction as [BigFraction] object.
+  BigFraction get fractionalPart => BigFraction(numerator, denominator);
 
   /// The sum between two mixed fractions.
-  MixedFraction operator +(MixedFraction other) {
+  MixedBigFraction operator +(MixedBigFraction other) {
     final result = toFraction() + other.toFraction();
 
     return result.toMixedFraction();
   }
 
   /// The difference between two mixed fractions.
-  MixedFraction operator -(MixedFraction other) {
+  MixedBigFraction operator -(MixedBigFraction other) {
     final result = other.toFraction() - toFraction();
 
     return result.toMixedFraction();
   }
 
   /// The product of two mixed fractions.
-  MixedFraction operator *(MixedFraction other) {
+  MixedBigFraction operator *(MixedBigFraction other) {
     final result = toFraction() * other.toFraction();
 
     return result.toMixedFraction();
   }
 
   /// The division of two mixed fractions.
-  MixedFraction operator /(MixedFraction other) {
+  MixedBigFraction operator /(MixedBigFraction other) {
     final result = toFraction() / other.toFraction();
 
     return result.toMixedFraction();
@@ -347,7 +352,7 @@ class MixedFraction extends Rational {
   ///
   /// Any other value which is not `0`, `1` or `2` will throw an exception of
   /// type [MixedFractionException].
-  int operator [](int index) {
+  BigInt operator [](int index) {
     switch (index) {
       case 0:
         return whole;

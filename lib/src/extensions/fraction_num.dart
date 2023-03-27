@@ -1,13 +1,13 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 
-/// Extension method that adds [Fraction] functionalities to [num].
-extension FractionNum on num {
-  /// Builds a [Fraction] from an [int] or a [double].
-  Fraction toFraction() {
+/// Extension method that adds [BigFraction] functionalities to [num].
+extension BigFractionNum on num {
+  /// Builds a [BigFraction] from an [int] or a [double].
+  BigFraction toBigFraction() {
     if (this is int) {
-      return Fraction(toInt());
+      return BigFraction(BigInt.from(this));
     }
 
-    return Fraction.fromDouble(toDouble());
+    return BigFraction.fromDouble(toDouble());
   }
 }

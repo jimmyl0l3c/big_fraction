@@ -1,4 +1,4 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 import 'package:test/test.dart';
 
 void main() {

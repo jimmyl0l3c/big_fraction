@@ -1,4 +1,4 @@
-import 'package:fraction/fraction.dart';
+import 'package:big_fraction/big_fraction.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -7,13 +7,13 @@ void main() {
       'Making sure that integers are properly converted into '
       'mixed fractions',
       () {
-        final mixedVal = MixedFraction(
-          whole: 0,
-          numerator: 16,
-          denominator: 1,
+        final mixedVal = MixedBigFraction(
+          whole: BigInt.zero,
+          numerator: BigInt.from(16),
+          denominator: BigInt.one,
         );
 
-        expect(16.toMixedFraction(), equals(mixedVal));
+        expect(16.toMixedBigFraction(), equals(mixedVal));
       },
     );
 
@@ -21,13 +21,13 @@ void main() {
       'Making sure that doubles are properly converted into '
       'mixed fractions',
       () {
-        final mixedVal = MixedFraction(
-          whole: 6,
-          numerator: 37,
-          denominator: 50,
+        final mixedVal = MixedBigFraction(
+          whole: BigInt.from(6),
+          numerator: BigInt.from(37),
+          denominator: BigInt.from(50),
         );
 
-        expect(6.74.toMixedFraction(), equals(mixedVal));
+        expect(6.74.toMixedBigFraction(), equals(mixedVal));
       },
     );
   });

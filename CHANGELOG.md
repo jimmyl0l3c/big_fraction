@@ -1,3 +1,7 @@
+## 5.0.0
+
+- Rewrite to BigFraction (use BigInt instead of int for numerator and denominator)
+
 ## 4.1.4
  - Increased pubspec description length to raise the score at `pub.dev`
 

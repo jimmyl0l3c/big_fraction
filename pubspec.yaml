@@ -1,6 +1,6 @@
 name: big_fraction
 description: A package that helps you working with fractions and mixed fractions. Fork that uses BigInt for numerator and denominator.
-version: 5.0.0
+version: 5.0.1
 repository: https://github.com/jimmyl0l3c/big_fraction
 homepage: https://github.com/jimmyl0l3c/big_fraction
 

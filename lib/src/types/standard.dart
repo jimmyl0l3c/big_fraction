@@ -322,6 +322,10 @@ class BigFraction extends BigRational {
 
   @override
   int get hashCode {
+    if (numerator == BigInt.zero) {
+      return 0;
+    }
+
     var result = 17;
 
     result = result * 37 + numerator.hashCode;

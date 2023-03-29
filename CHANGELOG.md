@@ -1,3 +1,7 @@
+## 5.0.1
+
+- BigFractions with numerator equal to zero have always hashcode zero
+
 ## 5.0.0
 
 - Rewrite to BigFraction (use BigInt instead of int for numerator and denominator)

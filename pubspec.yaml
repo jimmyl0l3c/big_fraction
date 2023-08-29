@@ -5,11 +5,8 @@ repository: https://github.com/jimmyl0l3c/big_fraction
 homepage: https://github.com/jimmyl0l3c/big_fraction
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: ">=3.1.0 <4.0.0"
 
 dev_dependencies:
-  # https://pub.dev/packages/dart_code_metrics
-  dart_code_metrics: ^4.17.1
-
   # https://pub.dev/packages/test
-  test: ^1.21.5
+  test: ^1.24.6

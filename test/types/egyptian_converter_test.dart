@@ -87,33 +87,33 @@ void main() {
       final testMatrix = {
         BigFraction.from(5, 8): [
           BigFraction.from(1, 2),
-          BigFraction.from(1, 8)
+          BigFraction.from(1, 8),
         ],
         BigFraction.from(2, 3): [
           BigFraction.from(1, 2),
-          BigFraction.from(1, 6)
+          BigFraction.from(1, 6),
         ],
         BigFraction.from(2, 5): [
           BigFraction.from(1, 3),
-          BigFraction.from(1, 15)
+          BigFraction.from(1, 15),
         ],
         BigFraction.from(3, 4): [
           BigFraction.from(1, 2),
-          BigFraction.from(1, 4)
+          BigFraction.from(1, 4),
         ],
         BigFraction.from(3, 5): [
           BigFraction.from(1, 2),
-          BigFraction.from(1, 10)
+          BigFraction.from(1, 10),
         ],
         BigFraction.from(4, 5): [
           BigFraction.from(1, 2),
           BigFraction.from(1, 4),
-          BigFraction.from(1, 20)
+          BigFraction.from(1, 20),
         ],
         BigFraction.from(7, 15): [
           BigFraction.from(1, 3),
           BigFraction.from(1, 8),
-          BigFraction.from(1, 120)
+          BigFraction.from(1, 120),
         ],
       };
 

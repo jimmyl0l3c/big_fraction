@@ -1,3 +1,7 @@
+## 6.0.0
+
+- Update Dart SDK constraints to `">=3.0.2 <4.0.0"`
+
 ## 5.0.1
 
 - BigFractions with numerator equal to zero have always hashcode zero
